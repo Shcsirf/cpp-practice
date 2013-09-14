@@ -13,6 +13,13 @@ using std::cin;
 using std::cerr;
 using std::vector;
 
+/*
+ * The purpose of this method is to take in a reference to a sorted vector of strings
+ * and a reference to a string to compare and see if the string exists in the vector.
+ * 
+ * Arguments: const vector<string>& , const string&
+ * Return: bool
+ */
 bool binary_search(const vector<string>& sorted_vec, const string& key){
 	size_t mid, left=0;
 	size_t right=sorted_vec.size();
