@@ -13,6 +13,17 @@ using std::cin;
 using std::cerr;
 using std::vector;
 
+bool binary_search(const vector<string>& sorted_vec, const string& key){
+	size_t mid, left=0;
+	size_t right=sorted_vec.size();
+	while(left<right){
+		mid=left + (right - left) / 2;
+		if(key > sorted_vec.at(mid)){
+			left = mid +1;
+		}
+	}
+}
+
 vector<string> storeContent(string x){
 	vector<string> contents;
 	string line;
