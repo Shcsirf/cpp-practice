@@ -1,2 +1,2 @@
 all:
-	g++ -Wall A2.cpp
+	g++ A2.cpp
