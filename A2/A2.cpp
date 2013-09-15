@@ -29,25 +29,26 @@ bool binary_search(const vector<string>& sorted_vec, const string& key){
 			left = mid +1;
 		}
 	}
+	return false;
 }
 
-vector<string> storeContent(string x){
+bool canOpenFile(const string& x){
+	ifstream ifs;
+	ifs.open(x.c_str());
+	bool open = !ifs.fail();
+	ifs.close();
+	return open;
+}
+
+vector<string> storeContent(const string& x){
 	vector<string> contents;
 	string line;
 	ifstream ifs;
 	ifs.open(x.c_str());
-	if(ifs.fail()){
-		cerr << "Error: Are you sure you're using the correct format?" << endl;
-		cout << x << " failed to open." << endl;
-		vector<string> failed;
-		failed.push_back ("failed");
-		return failed;
+	while(getline(ifs, line)){
+		contents.push_back (line);
 	}
-	else{
-		while(getline(ifs, line)){
-			contents.push_back (line);
-		}
-	}
+	ifs.close()
 	return contents;
 }
 
@@ -95,15 +96,25 @@ int main(){
 		if(error){
 			continue;
 		}
-		contents1 = storeContent(file1);
-		contents2 = storeContent(file2);
-		if((contents1[0] == "failed") || (contents2[0] == "failed")){
+		bool openFile1 = canOpenFile(file1);
+		bool openFile2 = canOpenFile(file2);
+		if((!openFile1) || (!openFile2)){
+			cerr << "Error: was unable to open file!" << endl;
+			if(!openFile1){
+				cerr << "File : " << file1 << " failed to open" << endl;
+			}
+			if(!openFile2){
+				cerr << "File : " << file2 << " failed to open" << endl;
+			}
 			input = "";
 			algo = "";
 			file1 = "";
 			file2 = "";
 			continue;
 		}
+		contents1 = storeContent(file1);
+		contents2 = storeContent(file2);
+		
 		printVector(contents2);
 		printVector(contents1);
 
