@@ -36,7 +36,7 @@ bool validate_infix_expr(vector<Token> ie)
 	bool valid;
 	string last;
 	for(int i=0; i< ie.size(); i++){
-		if((ie.at(i).value == '/')&&(ie.at(i+1).value == '0')){
+		if((ie.at(i).value == "/")&&(ie.at(i+1).value == "0")){
 			cerr << "Error: Cannot divide by zero" << endl;
 			valid = false;
 			break;
@@ -58,6 +58,7 @@ bool validate_infix_expr(vector<Token> ie)
 			}
 			else{
 
+			}
 		}
 	}
     return valid;
@@ -75,10 +76,8 @@ bool validate_infix_expr(vector<Token> ie)
  *   + etc.
  * -----------------------------------------------------------------------------
  */
-double eval_infix_expr(vector<Token> ie, map<string,double> sym_tab)
-{
+double eval_infix_expr(vector<Token> ie, map<string,double> sym_tab){
     vector<Token> postfix_expr;
-    
     // convert ie in to a postfix expression, stored in postfix_expr
     
     // YOUR CODE GOES HERE
