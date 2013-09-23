@@ -35,31 +35,53 @@ bool validate_infix_expr(vector<Token> ie)
     // YOUR CODE GOES HERE
 	bool valid;
 	string last;
+	stack<string> delimStack;
 	for(int i=0; i< ie.size(); i++){
 		if((ie.at(i).value == "/")&&(ie.at(i+1).value == "0")){
 			cerr << "Error: Cannot divide by zero" << endl;
-			valid = false;
-			break;
+			return false;
 		}
-		if((ie.at(i).type == OPERATOR)&&(ie.at(i).type == OPERATOR)){
+		if((ie.at(i).type == OPERATOR)&&(ie.at(i+1).type == OPERATOR)){
 			cerr << "Error: Cannot have more than one operator in a row" << endl;
-			valid = false;
-			break;
+			return false;
 		}
 		if((ie.at(i).type == NUMBER)&&(ie.at(i+1).type == NUMBER)){
 			cerr << "Error: Cannot have more than one number next to each other"
 				<<endl;
-			valid = false;
-			break;
+			return false;
 		}
 		if(ie.at(i).type == DELIM){
-			if(ie.at(i).value == last){
-
+			if((ie.at(i).value == "[") || (ie.at(i).value == "{")||(ie.at(i).value == "(")){
+				delimStack.push(ie.at(i).value);
 			}
-			else{
-
+			else if((ie.at(i).value == "]") || (ie.at(i).value == "}")||(ie.at(i).value == ")")){
+				if(delimStack.empty()){
+					return false;
+				}
+				if((ie.at(i).value == "]")&&(delimStack.top() == "[")){
+					delimStack.pop();
+					valid = true;
+				}
+				else if((ie.at(i).value == "}")&&(delimStack.top() == "{")){
+					delimStack.pop();
+					valid = true;
+				}
+				else if((ie.at(i).value == ")")&&(delimStack.top() == "(")){
+					delimStack.pop();
+					valid = true;
+				}
+				else{
+					valid = false;
+					break;
+				}
 			}
 		}
+	}
+	if(delimStack.empty()){
+		valid = true;
+	}
+	else{
+		valid = false;
 	}
     return valid;
 }
