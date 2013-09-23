@@ -34,6 +34,7 @@ bool validate_infix_expr(vector<Token> ie)
 {
     // YOUR CODE GOES HERE
 	bool valid;
+	string last;
 	for(int i=0; i< ie.size(); i++){
 		if((ie.at(i).value == '/')&&(ie.at(i+1).value == '0')){
 			cerr << "Error: Cannot divide by zero" << endl;
@@ -41,12 +42,22 @@ bool validate_infix_expr(vector<Token> ie)
 			break;
 		}
 		if((ie.at(i).type == OPERATOR)&&(ie.at(i).type == OPERATOR)){
-			cerr << "Error: Cannot have more than one operator" << endl;
+			cerr << "Error: Cannot have more than one operator in a row" << endl;
+			valid = false;
+			break;
+		}
+		if((ie.at(i).type == NUMBER)&&(ie.at(i+1).type == NUMBER)){
+			cerr << "Error: Cannot have more than one number next to each other"
+				<<endl;
 			valid = false;
 			break;
 		}
 		if(ie.at(i).type == DELIM){
-			cout << "This is a Delimiter" << endl;
+			if(ie.at(i).value == last){
+
+			}
+			else{
+
 		}
 	}
     return valid;
