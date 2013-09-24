@@ -33,22 +33,51 @@ extern const string usage_msg = "UB Calculator Program. Version 0.1\n"
 bool validate_infix_expr(vector<Token> ie)
 {
     // YOUR CODE GOES HERE
-	bool valid;
-	string last;
+	bool valid = true;
 	stack<string> delimStack;
+	int numberCounter = 0;
+	int operatorCounter = 0;
+	int divisionCounter = 0;
 	for(int i=0; i< ie.size(); i++){
-		if((ie.at(i).value == "/")&&(ie.at(i+1).value == "0")){
-			cerr << "Error: Cannot divide by zero" << endl;
-			return false;
+		if(ie.at(i).type == NUMBER){
+			if((ie.at(i).value == "0")&&(divisionCounter == 1)){
+					cerr << "Error: Cannot divide by zero" << endl;
+					return false;
+			}
+			if(numberCounter == 1){
+				cerr << "Error: Cannot have more than one number without an operator in between"
+					<<endl;
+				return false;
+			}
+			else{
+				numberCounter++;
+				if(operatorCounter > 0){
+					operatorCounter--;
+				}
+				else if(divisionCounter > 0){
+					divisionCounter;
+				}
+			}
 		}
-		if((ie.at(i).type == OPERATOR)&&(ie.at(i+1).type == OPERATOR)){
-			cerr << "Error: Cannot have more than one operator in a row" << endl;
-			return false;
+		if(ie.at(i).type == OPERATOR){
+			if(operatorCounter == 1){
+				cerr << "Error: Cannot have more than one operator without a number in between" << endl;
+				return false;
+			}
+			else if(numberCounter == 0){
+				cerr << "Error: must have a number before an operator" << endl;
+				return false;
+			}
+			else{
+				operatorCounter++;
+				numberCounter--;
+			}
 		}
-		if((ie.at(i).type == NUMBER)&&(ie.at(i+1).type == NUMBER)){
-			cerr << "Error: Cannot have more than one number next to each other"
-				<<endl;
-			return false;
+		if(ie.at(i).value == "/"){
+			divisionCounter++;
+		}
+		else if(divisionCounter > 0){
+			divisionCounter--;
 		}
 		if(ie.at(i).type == DELIM){
 			if((ie.at(i).value == "[") || (ie.at(i).value == "{")||(ie.at(i).value == "(")){
@@ -77,7 +106,15 @@ bool validate_infix_expr(vector<Token> ie)
 			}
 		}
 	}
-	if(delimStack.empty()){
+	if(ie.empty()){
+		valid = false;
+		cerr << "Error: No expression was entered" << endl;
+	}
+	else if(operatorCounter > 0){
+		valid = false;
+		cerr << "Error: Can't have a operator without a number following it" << endl;
+	}
+	else if(delimStack.empty()){
 		valid = true;
 	}
 	else{
