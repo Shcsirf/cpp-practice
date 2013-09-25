@@ -39,13 +39,13 @@ bool validate_infix_expr(vector<Token> ie)
 	int operatorCounter = 0;
 	int divisionCounter = 0;
 	for(int i=0; i< ie.size(); i++){
-		if(ie.at(i).type == NUMBER){
+		if((ie.at(i).type == NUMBER)||(ie.at(i).type == IDENT)){
 			if((ie.at(i).value == "0")&&(divisionCounter == 1)){
 					cerr << "Error: Cannot divide by zero" << endl;
 					return false;
 			}
 			if(numberCounter == 1){
-				cerr << "Error: Cannot have more than one number without an operator in between"
+				cerr << "Error: Cannot have more than one number or variable without an operator in between"
 					<<endl;
 				return false;
 			}
@@ -55,17 +55,17 @@ bool validate_infix_expr(vector<Token> ie)
 					operatorCounter--;
 				}
 				else if(divisionCounter > 0){
-					divisionCounter;
+					divisionCounter--;
 				}
 			}
 		}
 		if(ie.at(i).type == OPERATOR){
 			if(operatorCounter == 1){
-				cerr << "Error: Cannot have more than one operator without a number in between" << endl;
+				cerr << "Error: Cannot have more than one operator without a number or variable in between" << endl;
 				return false;
 			}
 			else if(numberCounter == 0){
-				cerr << "Error: must have a number before an operator" << endl;
+				cerr << "Error: must have a number or variable before an operator" << endl;
 				return false;
 			}
 			else{
@@ -140,6 +140,93 @@ double eval_infix_expr(vector<Token> ie, map<string,double> sym_tab){
     // convert ie in to a postfix expression, stored in postfix_expr
     
     // YOUR CODE GOES HERE
+	if(!validate_infix_expr(ie)){
+		throw runtime_error("Error: invalid expression");
+	}
+	stack<Token> operationStack;
+	for(int i=0; i < ie.size(); i++){
+		Token temp = ie.at(i);
+		if(temp.type == NUMBER){
+			postfix_expr.push_back(temp);
+		}
+		else if(temp.type == IDENT){
+			if(sym_tab.find(temp.value)!= sym_tab.end()){
+				ostringstream strTemp;
+				strTemp << sym_tab.at(temp.value);
+				Token tokTemp = Token(NUMBER, strTemp.str());
+				postfix_expr.push_back(tokTemp);
+			}
+			else{
+				throw runtime_error("Error: unassigned variable");
+			}
+		}
+		else if(temp.type == DELIM){
+			if((temp.value == "(")||(temp.value == "{")||(temp.value == "[")){
+				operationStack.push(temp);
+			}
+			else{
+				while(!operationStack.empty()){
+					if((temp.value == ")")&&(operationStack.top().value == "(")){
+						operationStack.pop();
+						break;
+					}
+					else if(temp.value == ")"){
+						postfix_expr.push_back(operationStack.top());
+						operationStack.pop();
+					}
+					else if((temp.value == "}")&&(operationStack.top().value == "{")){
+						operationStack.pop();
+						break;
+					}
+					else if(temp.value == "}"){
+						postfix_expr.push_back(operationStack.top());
+						operationStack.pop();
+					}
+					else if((temp.value == "]")&&(operationStack.top().value == "[")){
+						operationStack.pop();
+						break;
+					}
+					else if(temp.value == "]"){
+						postfix_expr.push_back(operationStack.top());
+						operationStack.pop();
+					}
+					else{
+						throw runtime_error("Error: invalid infix input");
+					}
+				}
+			}
+		}
+		else if(temp.type == OPERATOR){
+			if(operationStack.empty()){
+				operationStack.push(temp);
+			}
+			else if((temp.value == "*")||(temp.value == "/")){
+				if((operationStack.top().value == "*")||(operationStack.top().value == "/")){
+					postfix_expr.push_back(operationStack.top());
+					operationStack.pop();
+					operationStack.push(temp);
+				}
+				else{
+					operationStack.push(temp);
+				}
+			}
+			else if(operationStack.top().type == OPERATOR){
+				postfix_expr.push_back(operationStack.top());
+				operationStack.pop();
+				operationStack.push(temp);
+			}
+			else{
+				operationStack.push(temp);
+			}
+		}
+		else{
+			throw runtime_error("Error: invalid entry");
+		}
+	}
+	while(!operationStack.empty()){
+		postfix_expr.push_back(operationStack.top());
+		operationStack.pop();
+	}
 
     // call the postfix evaluator to evaluate it
     Postfix_Evaluator pe(postfix_expr);
