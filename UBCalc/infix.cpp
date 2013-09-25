@@ -84,6 +84,10 @@ bool validate_infix_expr(vector<Token> ie)
 				delimStack.push(ie.at(i).value);
 			}
 			else if((ie.at(i).value == "]") || (ie.at(i).value == "}")||(ie.at(i).value == ")")){
+				if(operatorCounter > 0){
+					cerr << "Error: Invalid Expression" << endl;
+					return false;
+				}
 				if(delimStack.empty()){
 					return false;
 				}
